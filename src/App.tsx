@@ -14,9 +14,6 @@ import {
 
 import PhotographyGraphic, { SUBJECTS } from "./PhotographyGraphic";
 
-import Telephoto from "./assets/100-400.png";
-import Fisheye from "./assets/fishey.png";
-
 const CIRCLES_OF_CONFUSION: Record<
   string,
   {
@@ -24,14 +21,6 @@ const CIRCLES_OF_CONFUSION: Record<
     sensorHeight: number;
   }
 > = {
-  Webcam: {
-    coc: 0.002,
-    sensorHeight: 3.6,
-  },
-  Smartphone: {
-    coc: 0.002,
-    sensorHeight: 7.3,
-  },
   "Plein format (35mm)": {
     coc: 0.029,
     sensorHeight: 24,
@@ -44,6 +33,10 @@ const CIRCLES_OF_CONFUSION: Record<
     coc: 0.015,
     sensorHeight: 13,
   },
+  Smartphone: {
+    coc: 0.002,
+    sensorHeight: 7.3,
+  },
 };
 
 const COMMON_SETUPS: {
@@ -53,13 +46,6 @@ const COMMON_SETUPS: {
   idealDistance: number;
   sensor: string;
 }[] = [
-  {
-    name: "Webcam",
-    focalLength: 3.6,
-    aperture: 2.8,
-    idealDistance: 36,
-    sensor: "Webcam",
-  },
   {
     name: "Smartphone",
     focalLength: 4.3,
@@ -228,10 +214,10 @@ function App() {
                 value={focalLengthInMillimeters}
                 onChange={(val: number) => setFocalLengthInMillimeters(val)}
                 min={3}
-                max={400}
+                max={800}
                 step={1}
               >
-                {[14, 28, 35, 50, 70, 85, 100, 135, 155, 200].map((val) => (
+                {[14, 35, 50, 85, 135, 200, 400, 600, 800].map((val) => (
                   <SliderMark key={val} value={val} {...labelStyles}>
                     {val}
                   </SliderMark>
@@ -241,19 +227,6 @@ function App() {
                 </SliderTrack>
                 <SliderThumb borderColor="#212E40" />
               </Slider>
-            </Box>
-          </Flex>
-          <Flex gap={2} mt={2}>
-            <Box w="20%"></Box>
-            <Box flexGrow={1}>
-              <Flex justify="space-between">
-                <img src={Fisheye} alt="Objectif fisheye" style={{ height: 50 }} />
-                <img
-                  src={Telephoto}
-                  alt="Objectif 100-400"
-                  style={{ height: 50 }}
-                />
-              </Flex>
             </Box>
           </Flex>
         </Box>
