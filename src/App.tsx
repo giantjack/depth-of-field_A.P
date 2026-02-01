@@ -10,6 +10,7 @@ import {
   Text,
   Select,
   Button,
+  VStack,
 } from "@chakra-ui/react";
 
 import PhotographyGraphic, { SUBJECTS } from "./PhotographyGraphic";
@@ -156,7 +157,7 @@ function App() {
   const labelStyles = {
     mt: "2",
     ml: "-2.5",
-    fontSize: "sm",
+    fontSize: { base: "xs", md: "sm" },
   };
 
   const distanceMarks = useMemo(() => {
@@ -178,7 +179,8 @@ function App() {
   }));
 
   return (
-    <>
+    <Box>
+      {/* Visualisation */}
       <Box p={2} pt={6}>
         <PhotographyGraphic
           distanceToSubjectInInches={distanceToSubjectInInches}
@@ -194,13 +196,16 @@ function App() {
         />
       </Box>
 
-      <Box px={6}>
-        <Box pt={8}>
-          <Flex gap={2}>
-            <Box w="20%">
-              <Text align="right">Distance au sujet (m)</Text>
-            </Box>
-            <Box flexGrow={1}>
+      {/* Contrôles */}
+      <Box px={{ base: 3, md: 6 }}>
+        <VStack spacing={{ base: 6, md: 8 }} align="stretch">
+          
+          {/* Slider Distance */}
+          <Box pt={4}>
+            <Text fontWeight="medium" fontSize="sm" mb={2}>
+              Distance au sujet (m)
+            </Text>
+            <Box px={2} pb={4}>
               <Slider
                 aria-label="distance au sujet"
                 value={distanceToSubjectInInches}
@@ -217,18 +222,17 @@ function App() {
                 <SliderTrack bg="#EFF7FB">
                   <SliderFilledTrack bg="#FB9936" />
                 </SliderTrack>
-                <SliderThumb borderColor="#212E40" />
+                <SliderThumb borderColor="#212E40" boxSize={5} />
               </Slider>
             </Box>
-          </Flex>
-        </Box>
+          </Box>
 
-        <Box pt={10}>
-          <Flex gap={2}>
-            <Box w="20%">
-              <Text align="right">Longueur focale (mm)</Text>
-            </Box>
-            <Box flexGrow={1}>
+          {/* Slider Focale */}
+          <Box>
+            <Text fontWeight="medium" fontSize="sm" mb={2}>
+              Longueur focale (mm)
+            </Text>
+            <Box px={2} pb={4}>
               <Slider
                 aria-label="longueur focale"
                 value={focalToSlider(focalLengthInMillimeters)}
@@ -245,18 +249,17 @@ function App() {
                 <SliderTrack bg="#EFF7FB">
                   <SliderFilledTrack bg="#FB9936" />
                 </SliderTrack>
-                <SliderThumb borderColor="#212E40" />
+                <SliderThumb borderColor="#212E40" boxSize={5} />
               </Slider>
             </Box>
-          </Flex>
-        </Box>
+          </Box>
 
-        <Box pt={10}>
-          <Flex gap={2}>
-            <Box w="20%">
-              <Text align="right">Ouverture</Text>
-            </Box>
-            <Box flexGrow={1}>
+          {/* Slider Ouverture */}
+          <Box>
+            <Text fontWeight="medium" fontSize="sm" mb={2}>
+              Ouverture
+            </Text>
+            <Box px={2} pb={4}>
               <Slider
                 aria-label="ouverture"
                 value={aperture}
@@ -273,104 +276,108 @@ function App() {
                 <SliderTrack bg="#EFF7FB">
                   <SliderFilledTrack bg="#FB9936" />
                 </SliderTrack>
-                <SliderThumb borderColor="#212E40" />
+                <SliderThumb borderColor="#212E40" boxSize={5} />
               </Slider>
             </Box>
-          </Flex>
-        </Box>
+          </Box>
 
-        <Box pt={12}>
-          <Flex gap={2}>
-            <Flex gap={2} width="50%">
-              <Box w="20%" mt={2}>
-                <Text align="right">Taille du capteur</Text>
-              </Box>
-              <Box flexGrow={1}>
-                <Select
-                  value={sensor}
-                  placeholder="Capteur"
-                  onChange={(evt) => {
-                    if (!evt?.target?.value) {
-                      return;
-                    }
-                    setSensor(evt?.target?.value);
-                  }}
-                  borderColor="#212E40"
-                  _hover={{ borderColor: "#FB9936" }}
-                  _focus={{ borderColor: "#FB9936", boxShadow: "0 0 0 1px #FB9936" }}
-                >
-                  {Object.entries(CIRCLES_OF_CONFUSION).map(([key]) => (
-                    <option key={key} value={key}>
-                      {key}
-                    </option>
-                  ))}
-                </Select>
-              </Box>
-            </Flex>
-
-            <Flex gap={2} width="50%">
-              <Box w="20%" mt={2}>
-                <Text align="right">Sujet</Text>
-              </Box>
-              <Box flexGrow={1}>
-                <Select
-                  value={subject}
-                  placeholder="Sujet"
-                  onChange={(evt) => {
-                    if (SUBJECTS[evt?.target?.value as keyof typeof SUBJECTS]) {
-                      setSubject(evt?.target?.value);
-                    }
-                  }}
-                  borderColor="#212E40"
-                  _hover={{ borderColor: "#FB9936" }}
-                  _focus={{ borderColor: "#FB9936", boxShadow: "0 0 0 1px #FB9936" }}
-                >
-                  {Object.entries(SUBJECTS).map(([key]) => (
-                    <option key={key} value={key}>
-                      {key}
-                    </option>
-                  ))}
-                </Select>
-              </Box>
-            </Flex>
-          </Flex>
-        </Box>
-
-        <Box p={4} pt={6}>
-          <Flex gap={5} justify="center" flexWrap="wrap">
-            {COMMON_SETUPS.map((setup) => (
-              <Button
-                key={setup.name}
-                onClick={() => {
-                  setFocalLengthInMillimeters(setup.focalLength);
-                  setAperture(setup.aperture);
-                  setSensor(setup.sensor);
-                  setDistanceToSubjectInInches(setup.idealDistance);
+          {/* Sélecteurs Capteur et Sujet */}
+          <Flex 
+            gap={4} 
+            direction={{ base: "column", md: "row" }}
+          >
+            <Box flex="1">
+              <Text fontWeight="medium" fontSize="sm" mb={2}>
+                Taille du capteur
+              </Text>
+              <Select
+                value={sensor}
+                placeholder="Capteur"
+                onChange={(evt) => {
+                  if (!evt?.target?.value) {
+                    return;
+                  }
+                  setSensor(evt?.target?.value);
                 }}
-                bg="#212E40"
-                color="white"
-                _hover={{ bg: "#FB9936" }}
+                borderColor="#212E40"
+                _hover={{ borderColor: "#FB9936" }}
+                _focus={{ borderColor: "#FB9936", boxShadow: "0 0 0 1px #FB9936" }}
               >
-                {setup.name}
-              </Button>
-            ))}
-          </Flex>
-        </Box>
+                {Object.entries(CIRCLES_OF_CONFUSION).map(([key]) => (
+                  <option key={key} value={key}>
+                    {key}
+                  </option>
+                ))}
+              </Select>
+            </Box>
 
-        <Box p={4} pt={2}>
-          <Text fontSize="xs" color="#666" textAlign="center">
-            Basé sur le travail open source de{" "}
-            <a
-              href="https://github.com/jherr/depth-of-field"
-              target="_blank"
-              style={{ color: "#FB9936" }}
-            >
-              Jack Herrington
-            </a>
-          </Text>
-        </Box>
+            <Box flex="1">
+              <Text fontWeight="medium" fontSize="sm" mb={2}>
+                Sujet
+              </Text>
+              <Select
+                value={subject}
+                placeholder="Sujet"
+                onChange={(evt) => {
+                  if (SUBJECTS[evt?.target?.value as keyof typeof SUBJECTS]) {
+                    setSubject(evt?.target?.value);
+                  }
+                }}
+                borderColor="#212E40"
+                _hover={{ borderColor: "#FB9936" }}
+                _focus={{ borderColor: "#FB9936", boxShadow: "0 0 0 1px #FB9936" }}
+              >
+                {Object.entries(SUBJECTS).map(([key]) => (
+                  <option key={key} value={key}>
+                    {key}
+                  </option>
+                ))}
+              </Select>
+            </Box>
+          </Flex>
+
+          {/* Boutons presets */}
+          <Box pt={2}>
+            <Text fontWeight="medium" fontSize="sm" mb={3} textAlign="center">
+              Configurations courantes
+            </Text>
+            <Flex gap={2} justify="center" flexWrap="wrap">
+              {COMMON_SETUPS.map((setup) => (
+                <Button
+                  key={setup.name}
+                  onClick={() => {
+                    setFocalLengthInMillimeters(setup.focalLength);
+                    setAperture(setup.aperture);
+                    setSensor(setup.sensor);
+                    setDistanceToSubjectInInches(setup.idealDistance);
+                  }}
+                  bg="#212E40"
+                  color="white"
+                  size={{ base: "sm", md: "md" }}
+                  _hover={{ bg: "#FB9936" }}
+                >
+                  {setup.name}
+                </Button>
+              ))}
+            </Flex>
+          </Box>
+
+          {/* Crédit */}
+          <Box pb={4}>
+            <Text fontSize="xs" color="#666" textAlign="center">
+              Basé sur le travail open source de{" "}
+              <a
+                href="https://github.com/jherr/depth-of-field"
+                target="_blank"
+                style={{ color: "#FB9936" }}
+              >
+                Jack Herrington
+              </a>
+            </Text>
+          </Box>
+        </VStack>
       </Box>
-    </>
+    </Box>
   );
 }
 
