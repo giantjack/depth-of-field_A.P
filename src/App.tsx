@@ -10,9 +10,6 @@ import {
   Text,
   Select,
   Button,
-  Radio,
-  Stack,
-  RadioGroup,
 } from "@chakra-ui/react";
 
 import PhotographyGraphic, { SUBJECTS } from "./PhotographyGraphic";
@@ -35,7 +32,7 @@ const CIRCLES_OF_CONFUSION: Record<
     coc: 0.002,
     sensorHeight: 7.3,
   },
-  "35mm (full frame)": {
+  "Plein format (35mm)": {
     coc: 0.029,
     sensorHeight: 24,
   },
@@ -43,7 +40,7 @@ const CIRCLES_OF_CONFUSION: Record<
     coc: 0.019,
     sensorHeight: 15.6,
   },
-  "Micro Four Thirds": {
+  "Micro 4/3": {
     coc: 0.015,
     sensorHeight: 13,
   },
@@ -82,32 +79,30 @@ const COMMON_SETUPS: {
     focalLength: 28,
     aperture: 1.4,
     idealDistance: 48,
-    sensor: "35mm (full frame)",
+    sensor: "Plein format (35mm)",
   },
   {
     name: "FF - 35mm",
     focalLength: 35,
     aperture: 1.4,
     idealDistance: 60,
-    sensor: "35mm (full frame)",
+    sensor: "Plein format (35mm)",
   },
   {
     name: "FF - 50mm",
     focalLength: 50,
     aperture: 1.8,
     idealDistance: 72,
-    sensor: "35mm (full frame)",
+    sensor: "Plein format (35mm)",
   },
   {
     name: "FF - 70mm",
     focalLength: 70,
     aperture: 2.8,
     idealDistance: 96,
-    sensor: "35mm (full frame)",
+    sensor: "Plein format (35mm)",
   },
 ];
-
-const SYSTEMS = ["Metric", "Imperial"] as const;
 
 function clamp(value: number, min: number, max: number) {
   return Math.min(Math.max(value, min), max);
@@ -118,9 +113,8 @@ function App() {
     useState(72);
   const [focalLengthInMillimeters, setFocalLengthInMillimeters] = useState(50);
   const [aperture, setAperture] = useState(1.8);
-  const [subject, setSubject] = useState("Human");
-  const [system, setSystem] = useState<(typeof SYSTEMS)[number]>("Imperial");
-  const [sensor, setSensor] = useState("35mm (full frame)");
+  const [subject, setSubject] = useState("Humain");
+  const [sensor, setSensor] = useState("Plein format (35mm)");
 
   const distanceToSubjectInMM = distanceToSubjectInInches * 25.4;
 
@@ -166,28 +160,17 @@ function App() {
   };
 
   const distanceMarks = useMemo(() => {
-    if (system === "Imperial") {
-      return new Array(Math.floor(farDistanceInInches / 24) + 1)
-        .fill(0)
-        .map((_v, i) => (i + 1) * 24)
-        .map((val) => ({
-          value: val,
-          label: `${val / 12}'`,
-        }));
-    } else {
-      const farDistanceInMeters = farDistanceInInches * 0.0254;
-      function convertMetersToInches(meters: number) {
-        return meters * 39.3701;
-      }
-      return new Array(Math.floor(farDistanceInMeters) + 1)
-        .fill(0)
-        .map((_val, val) => ({
-          value: convertMetersToInches(val + 1),
-          label: `${val + 1}m`,
-        }));
-      return [];
+    const farDistanceInMeters = farDistanceInInches * 0.0254;
+    function convertMetersToInches(meters: number) {
+      return meters * 39.3701;
     }
-  }, [system, farDistanceInInches]);
+    return new Array(Math.floor(farDistanceInMeters) + 1)
+      .fill(0)
+      .map((_val, val) => ({
+        value: convertMetersToInches(val + 1),
+        label: `${val + 1}m`,
+      }));
+  }, [farDistanceInInches]);
 
   return (
     <>
@@ -200,7 +183,6 @@ function App() {
           subject={subject as keyof typeof SUBJECTS}
           focalLength={focalLengthInMillimeters}
           aperture={aperture}
-          system={system}
           verticalFieldOfView={verticalFieldOfView}
           onChangeDistance={(val) => setDistanceToSubjectInInches(val)}
         />
@@ -210,36 +192,11 @@ function App() {
         <Box pt={6}>
           <Flex gap={2}>
             <Box w="20%">
-              <Text align="right">Units</Text>
-            </Box>
-
-            <Box flexGrow={1}>
-              <RadioGroup
-                onChange={(v) => setSystem(v as "Imperial" | "Metric")}
-                value={system}
-              >
-                <Stack direction="row">
-                  {SYSTEMS.map((system) => (
-                    <Radio value={system} key={system}>
-                      {system}
-                    </Radio>
-                  ))}
-                </Stack>
-              </RadioGroup>
-            </Box>
-          </Flex>
-        </Box>
-
-        <Box pt={6}>
-          <Flex gap={2}>
-            <Box w="20%">
-              <Text align="right">
-                Subject Distance ({system === "Imperial" ? "ft" : "m"})
-              </Text>
+              <Text align="right">Distance au sujet (m)</Text>
             </Box>
             <Box flexGrow={1}>
               <Slider
-                aria-label="distance to subject"
+                aria-label="distance au sujet"
                 value={distanceToSubjectInInches}
                 onChange={(val: number) => setDistanceToSubjectInInches(val)}
                 min={10}
@@ -251,10 +208,10 @@ function App() {
                     {label}
                   </SliderMark>
                 ))}
-                <SliderTrack>
-                  <SliderFilledTrack />
+                <SliderTrack bg="#EFF7FB">
+                  <SliderFilledTrack bg="#FB9936" />
                 </SliderTrack>
-                <SliderThumb />
+                <SliderThumb borderColor="#212E40" />
               </Slider>
             </Box>
           </Flex>
@@ -263,11 +220,11 @@ function App() {
         <Box pt={6}>
           <Flex gap={2}>
             <Box w="20%">
-              <Text align="right">Focal Length (mm)</Text>
+              <Text align="right">Longueur focale (mm)</Text>
             </Box>
             <Box flexGrow={1}>
               <Slider
-                aria-label="focal length"
+                aria-label="longueur focale"
                 value={focalLengthInMillimeters}
                 onChange={(val: number) => setFocalLengthInMillimeters(val)}
                 min={3}
@@ -279,10 +236,10 @@ function App() {
                     {val}
                   </SliderMark>
                 ))}
-                <SliderTrack>
-                  <SliderFilledTrack />
+                <SliderTrack bg="#EFF7FB">
+                  <SliderFilledTrack bg="#FB9936" />
                 </SliderTrack>
-                <SliderThumb />
+                <SliderThumb borderColor="#212E40" />
               </Slider>
             </Box>
           </Flex>
@@ -290,10 +247,10 @@ function App() {
             <Box w="20%"></Box>
             <Box flexGrow={1}>
               <Flex justify="space-between">
-                <img src={Fisheye} alt="Fishey lens" style={{ height: 50 }} />
+                <img src={Fisheye} alt="Objectif fisheye" style={{ height: 50 }} />
                 <img
                   src={Telephoto}
-                  alt="100-400 lens"
+                  alt="Objectif 100-400"
                   style={{ height: 50 }}
                 />
               </Flex>
@@ -304,11 +261,11 @@ function App() {
         <Box pt={6}>
           <Flex gap={2}>
             <Box w="20%">
-              <Text align="right">Aperture</Text>
+              <Text align="right">Ouverture</Text>
             </Box>
             <Box flexGrow={1}>
               <Slider
-                aria-label="aperture"
+                aria-label="ouverture"
                 value={aperture}
                 onChange={(val: number) => setAperture(val)}
                 min={0.8}
@@ -320,10 +277,10 @@ function App() {
                     {val}
                   </SliderMark>
                 ))}
-                <SliderTrack>
-                  <SliderFilledTrack />
+                <SliderTrack bg="#EFF7FB">
+                  <SliderFilledTrack bg="#FB9936" />
                 </SliderTrack>
-                <SliderThumb />
+                <SliderThumb borderColor="#212E40" />
               </Slider>
             </Box>
           </Flex>
@@ -333,18 +290,21 @@ function App() {
           <Flex gap={2}>
             <Flex gap={2} width="50%">
               <Box w="20%" mt={2}>
-                <Text align="right">Sensor Size</Text>
+                <Text align="right">Taille du capteur</Text>
               </Box>
               <Box flexGrow={1}>
                 <Select
                   value={sensor}
-                  placeholder="Sensor"
+                  placeholder="Capteur"
                   onChange={(evt) => {
                     if (!evt?.target?.value) {
                       return;
                     }
                     setSensor(evt?.target?.value);
                   }}
+                  borderColor="#212E40"
+                  _hover={{ borderColor: "#FB9936" }}
+                  _focus={{ borderColor: "#FB9936", boxShadow: "0 0 0 1px #FB9936" }}
                 >
                   {Object.entries(CIRCLES_OF_CONFUSION).map(([key]) => (
                     <option key={key} value={key}>
@@ -357,17 +317,20 @@ function App() {
 
             <Flex gap={2} width="50%">
               <Box w="20%" mt={2}>
-                <Text align="right">Subject</Text>
+                <Text align="right">Sujet</Text>
               </Box>
               <Box flexGrow={1}>
                 <Select
                   value={subject}
-                  placeholder="Subject"
+                  placeholder="Sujet"
                   onChange={(evt) => {
                     if (SUBJECTS[evt?.target?.value as keyof typeof SUBJECTS]) {
                       setSubject(evt?.target?.value);
                     }
                   }}
+                  borderColor="#212E40"
+                  _hover={{ borderColor: "#FB9936" }}
+                  _focus={{ borderColor: "#FB9936", boxShadow: "0 0 0 1px #FB9936" }}
                 >
                   {Object.entries(SUBJECTS).map(([key]) => (
                     <option key={key} value={key}>
@@ -381,7 +344,7 @@ function App() {
         </Box>
 
         <Box p={4} pt={6}>
-          <Flex gap={5} justify="center">
+          <Flex gap={5} justify="center" flexWrap="wrap">
             {COMMON_SETUPS.map((setup) => (
               <Button
                 key={setup.name}
@@ -391,6 +354,9 @@ function App() {
                   setSensor(setup.sensor);
                   setDistanceToSubjectInInches(setup.idealDistance);
                 }}
+                bg="#212E40"
+                color="white"
+                _hover={{ bg: "#FB9936" }}
               >
                 {setup.name}
               </Button>
@@ -399,10 +365,27 @@ function App() {
         </Box>
 
         <Box p={4} pt={6}>
-          <Flex gap={5} justify="center">
-            <a href="https://github.com/jherr/depth-of-field" target="_blank">
-              Contribute to this open source project on GitHub.
-            </a>
+          <Flex direction="column" align="center" gap={2}>
+            <Text fontSize="sm" color="#212E40">
+              Simulateur de profondeur de champ pour{" "}
+              <a
+                href="https://apprendre.photo"
+                target="_blank"
+                style={{ color: "#FB9936", fontWeight: "bold" }}
+              >
+                Apprendre.Photo
+              </a>
+            </Text>
+            <Text fontSize="xs" color="#666">
+              Basé sur le travail open source de{" "}
+              <a
+                href="https://github.com/jherr/depth-of-field"
+                target="_blank"
+                style={{ color: "#FB9936" }}
+              >
+                Jack Herrington
+              </a>
+            </Text>
           </Flex>
         </Box>
       </Box>
