@@ -110,8 +110,8 @@ export default function PhotographyGraphicMobile({
   const mouseDownRef = useRef(false);
 
   // Limiter le viewBox pour mobile - zoom sur une zone pertinente
-  // On prend max 8 mètres (315 inches) ou la distance max si plus petite
-  const maxViewDistance = Math.min(farDistanceInInches, 315);
+  // On prend max 4 mètres (160 inches) pour un schéma plus grand/zoomé
+  const maxViewDistance = Math.min(farDistanceInInches, 160);
   
   function onMouseDown() {
     mouseDownRef.current = true;
@@ -196,82 +196,80 @@ export default function PhotographyGraphicMobile({
       </Flex>
 
       {/* SVG simplifié - juste le visuel */}
-      <Box minHeight="180px">
-        <svg
-          ref={svgRef}
-          onMouseDown={onMouseDown}
-          onMouseUp={onMouseUp}
-          onMouseMove={onMouseMove}
-          onTouchStart={onTouchStart}
-          onTouchEnd={onTouchEnd}
-          onTouchMove={onTouchMove}
-          xmlns="http://www.w3.org/2000/svg"
-          viewBox={`-15 0 ${maxViewDistance + 15} ${height}`}
-          style={{ width: "100%", height: "100%", minHeight: "180px", touchAction: "none" }}
-        >
-          <defs>
-            <clipPath id="fov-mobile">
-              <path d={viewPath} />
-            </clipPath>
-            <clipPath id="subject-mobile">
-              <rect x={0} y={0} width={500} height={height} />
-            </clipPath>
-          </defs>
+      <svg
+        ref={svgRef}
+        onMouseDown={onMouseDown}
+        onMouseUp={onMouseUp}
+        onMouseMove={onMouseMove}
+        onTouchStart={onTouchStart}
+        onTouchEnd={onTouchEnd}
+        onTouchMove={onTouchMove}
+        xmlns="http://www.w3.org/2000/svg"
+        viewBox={`-15 0 ${maxViewDistance + 15} ${height}`}
+        style={{ width: "100%", height: "auto", touchAction: "none" }}
+      >
+        <defs>
+          <clipPath id="fov-mobile">
+            <path d={viewPath} />
+          </clipPath>
+          <clipPath id="subject-mobile">
+            <rect x={0} y={0} width={500} height={height} />
+          </clipPath>
+        </defs>
 
-          {/* Champ de vision */}
-          <path d={viewPath} fill="#EFF7FB" />
+        {/* Champ de vision */}
+        <path d={viewPath} fill="#EFF7FB" />
 
-          {/* Appareil photo */}
-          <CameraIcon y={14.3} />
+        {/* Appareil photo */}
+        <CameraIcon y={14.3} />
 
-          {/* Zone de netteté */}
-          <rect
-            x={nearFocalPointInInches}
-            y={0}
-            width={(isDepthOfFieldInfinite ? maxViewDistance : Math.min(farFocalPointInInches, maxViewDistance)) - nearFocalPointInInches}
-            height={height}
-            fill="#FB9936"
-            fillOpacity={0.3}
-          />
+        {/* Zone de netteté */}
+        <rect
+          x={nearFocalPointInInches}
+          y={0}
+          width={(isDepthOfFieldInfinite ? maxViewDistance : Math.min(farFocalPointInInches, maxViewDistance)) - nearFocalPointInInches}
+          height={height}
+          fill="#FB9936"
+          fillOpacity={0.3}
+        />
 
-          {/* Marqueur hyperfocale (si visible) */}
-          {hyperFocalDistanceInInches <= maxViewDistance && hyperFocalDistanceInInches > 0 && (
-            <line
-              x1={hyperFocalDistanceInInches}
-              y1={0}
-              x2={hyperFocalDistanceInInches}
-              y2={height}
-              stroke="#FB9936"
-              strokeWidth={1}
-              strokeDasharray="4,4"
-            />
-          )}
-
-          {/* Sujet (grisé) */}
-          <g fill="#aaa">
-            <g transform={`translate(${distanceToSubjectInInches})`}>
-              <SubjectGraphic />
-            </g>
-          </g>
-          
-          {/* Sujet (dans le champ de vision) */}
-          <g clipPath="url(#fov-mobile)">
-            <g transform={`translate(${distanceToSubjectInInches})`}>
-              <SubjectGraphic />
-            </g>
-          </g>
-
-          {/* Ligne de mise au point */}
+        {/* Marqueur hyperfocale (si visible) */}
+        {hyperFocalDistanceInInches <= maxViewDistance && hyperFocalDistanceInInches > 0 && (
           <line
-            x1={distanceToSubjectInInches}
+            x1={hyperFocalDistanceInInches}
             y1={0}
-            x2={distanceToSubjectInInches}
+            x2={hyperFocalDistanceInInches}
             y2={height}
-            stroke="#212E40"
-            strokeWidth={0.5}
+            stroke="#FB9936"
+            strokeWidth={1}
+            strokeDasharray="4,4"
           />
-        </svg>
-      </Box>
+        )}
+
+        {/* Sujet (grisé) */}
+        <g fill="#aaa">
+          <g transform={`translate(${distanceToSubjectInInches})`}>
+            <SubjectGraphic />
+          </g>
+        </g>
+        
+        {/* Sujet (dans le champ de vision) */}
+        <g clipPath="url(#fov-mobile)">
+          <g transform={`translate(${distanceToSubjectInInches})`}>
+            <SubjectGraphic />
+          </g>
+        </g>
+
+        {/* Ligne de mise au point */}
+        <line
+          x1={distanceToSubjectInInches}
+          y1={0}
+          x2={distanceToSubjectInInches}
+          y2={height}
+          stroke="#212E40"
+          strokeWidth={0.5}
+        />
+      </svg>
 
       {/* Infos en bas : distance + profondeur de champ */}
       <Box mt={2} px={2}>
