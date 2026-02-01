@@ -112,18 +112,12 @@ export default function PhotographyGraphicMobile({
   const SubjectGraphic = SUBJECTS[subject].graphic;
   const height = SUBJECTS[subject].height;
 
-  // Largeur de la fenêtre de visualisation (~3m = 120 inches)
-  const viewWidth = 120;
-  
-  // Centrer le viewBox sur le sujet, avec des limites
-  // On garde une marge à gauche pour que le sujet ne soit pas collé au bord
-  const viewStartX = Math.max(
-    -15, // Minimum : montrer l'appareil photo
-    Math.min(
-      distanceToSubjectInInches - viewWidth * 0.4, // Sujet à 40% depuis la gauche
-      farDistanceInInches - viewWidth // Maximum : ne pas dépasser la fin
-    )
-  );
+  // ViewBox dynamique : toujours montrer appareil ET sujet
+  // - viewStartX fixe à -15 pour toujours voir l'appareil
+  // - viewWidth s'adapte à la distance du sujet (avec marge de 20%)
+  const viewStartX = -15;
+  const minViewWidth = 100; // Minimum ~2.5m pour que ce soit lisible
+  const viewWidth = Math.max(minViewWidth, distanceToSubjectInInches * 1.3);
   
   function onMouseDown() {
     mouseDownRef.current = true;
@@ -164,7 +158,7 @@ export default function PhotographyGraphicMobile({
     }
   }
 
-  // Construire le path du champ de vision pour toute la distance
+  // Construire le path du champ de vision
   const viewPath = buildViewPath(
     0,
     14.3,
@@ -188,8 +182,10 @@ export default function PhotographyGraphicMobile({
   const nearLimitDisplay = convertUnits(nearFocalPointInInches, 2);
   const farLimitDisplay = isDepthOfFieldInfinite ? "∞" : convertUnits(farFocalPointInInches, 2);
 
-  // Est-ce que l'appareil photo est visible dans le viewBox actuel ?
-  const showCamera = viewStartX <= 0;
+  // L'hyperfocale est-elle visible dans le viewBox actuel ?
+  const showHyperfocalMarker = hyperFocalDistanceInInches > viewStartX && 
+    hyperFocalDistanceInInches < viewStartX + viewWidth && 
+    hyperFocalDistanceInInches > 0;
 
   return (
     <Box width="100%">
@@ -208,7 +204,7 @@ export default function PhotographyGraphicMobile({
         </Box>
       </Flex>
 
-      {/* SVG avec viewBox centré sur le sujet */}
+      {/* SVG avec viewBox dynamique */}
       <svg
         ref={svgRef}
         onMouseDown={onMouseDown}
@@ -230,8 +226,8 @@ export default function PhotographyGraphicMobile({
         {/* Champ de vision */}
         <path d={viewPath} fill="#EFF7FB" />
 
-        {/* Appareil photo (si visible) */}
-        {showCamera && <CameraIcon y={14.3} />}
+        {/* Appareil photo */}
+        <CameraIcon y={14.3} />
 
         {/* Zone de netteté */}
         <rect
@@ -244,9 +240,7 @@ export default function PhotographyGraphicMobile({
         />
 
         {/* Marqueur hyperfocale (si visible dans la fenêtre) */}
-        {hyperFocalDistanceInInches > viewStartX && 
-         hyperFocalDistanceInInches < viewStartX + viewWidth && 
-         hyperFocalDistanceInInches > 0 && (
+        {showHyperfocalMarker && (
           <line
             x1={hyperFocalDistanceInInches}
             y1={0}
