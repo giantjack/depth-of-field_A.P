@@ -90,8 +90,8 @@ const COMMON_SETUPS: {
   },
 ];
 
-// Logarithmic scale for focal length (starting at 14mm)
-const MIN_FOCAL = 14;
+// Logarithmic scale for focal length
+const MIN_FOCAL = 8;
 const MAX_FOCAL = 800;
 
 function focalToSlider(focal: number): number {
@@ -171,7 +171,7 @@ function App() {
       }));
   }, [farDistanceInInches]);
 
-  const focalLengthMarks = [14, 24, 28, 35, 50, 85, 135, 200, 400, 800].map((focal) => ({
+  const focalLengthMarks = [8, 14, 24, 28, 35, 50, 85, 135, 200, 400, 800].map((focal) => ({
     value: focalToSlider(focal),
     label: `${focal}`,
   }));
