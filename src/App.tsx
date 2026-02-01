@@ -355,29 +355,17 @@ function App() {
           </Flex>
         </Box>
 
-        <Box p={4} pt={6}>
-          <Flex direction="column" align="center" gap={2}>
-            <Text fontSize="sm" color="#212E40">
-              Simulateur de profondeur de champ pour{" "}
-              <a
-                href="https://apprendre.photo"
-                target="_blank"
-                style={{ color: "#FB9936", fontWeight: "bold" }}
-              >
-                Apprendre.Photo
-              </a>
-            </Text>
-            <Text fontSize="xs" color="#666">
-              Basé sur le travail open source de{" "}
-              <a
-                href="https://github.com/jherr/depth-of-field"
-                target="_blank"
-                style={{ color: "#FB9936" }}
-              >
-                Jack Herrington
-              </a>
-            </Text>
-          </Flex>
+        <Box p={4} pt={2}>
+          <Text fontSize="xs" color="#666" textAlign="center">
+            Basé sur le travail open source de{" "}
+            <a
+              href="https://github.com/jherr/depth-of-field"
+              target="_blank"
+              style={{ color: "#FB9936" }}
+            >
+              Jack Herrington
+            </a>
+          </Text>
         </Box>
       </Box>
     </>
