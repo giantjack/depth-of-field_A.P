@@ -199,7 +199,7 @@ export default function PhotographyGraphic({
       onMouseUp={onMouseUp}
       onMouseMove={onMouseMove}
       xmlns="http://www.w3.org/2000/svg"
-      viewBox={`-43.5 0 ${farDistanceInInches} ${height + 12}`}
+      viewBox={`-43.5 0 ${farDistanceInInches} ${height + 16}`}
       style={{ width: "100%", height: "auto" }}
     >
       <defs>
@@ -231,8 +231,8 @@ export default function PhotographyGraphic({
       {/* Affichage fixe de l'hyperfocale sous le photographe */}
       <text
         x={-22}
-        y={height + 5}
-        fontSize={2.8}
+        y={height + 6}
+        fontSize={4}
         textAnchor="middle"
         fill="#FB9936"
         fontWeight="bold"
@@ -241,8 +241,8 @@ export default function PhotographyGraphic({
       </text>
       <text
         x={-22}
-        y={height + 8.5}
-        fontSize={3}
+        y={height + 11}
+        fontSize={4.5}
         textAnchor="middle"
         fill="#FB9936"
         fontWeight="bold"
@@ -252,49 +252,49 @@ export default function PhotographyGraphic({
 
       <line
         x1={nearFocalPointInInches}
-        y1={height + 7}
+        y1={height + 9}
         x2={nearFocalPointInInches}
-        y2={height + 9}
+        y2={height + 11}
         stroke="#212E40"
-        strokeWidth={0.2}
+        strokeWidth={0.3}
       />
       <line
         x1={farFocalPointInInches}
-        y1={height + 7}
+        y1={height + 9}
         x2={farFocalPointInInches}
-        y2={height + 9}
+        y2={height + 11}
         stroke="#212E40"
-        strokeWidth={0.2}
+        strokeWidth={0.3}
       />
       <line
         x1={nearFocalPointInInches}
-        y1={height + 8}
+        y1={height + 10}
         x2={farFocalPointInInches}
-        y2={height + 8}
+        y2={height + 10}
         stroke="#212E40"
-        strokeWidth={0.2}
+        strokeWidth={0.3}
       />
       <text
         x={
           nearFocalPointInInches +
           (farFocalPointInInches - nearFocalPointInInches) / 2
         }
-        y={height + 10.7}
-        fontSize={3}
+        y={height + 14.5}
+        fontSize={4}
         textAnchor="middle"
         fill="#212E40"
       >
         {convertUnits(farFocalPointInInches - nearFocalPointInInches)}
       </text>
 
-      <text x={-1} y={5} fontSize={4} fontWeight="bold" textAnchor="end" fill="#212E40">
+      <text x={-1} y={7} fontSize={6} fontWeight="bold" textAnchor="end" fill="#212E40">
         {focalLength}mm f/{aperture}
       </text>
 
       {farFocalPointInInches - nearFocalPointInInches > 18 && (
         <>
           <text
-            fontSize={3}
+            fontSize={4}
             textAnchor="start"
             fill="#212E40"
             transform={`translate(${nearFocalPointInInches - 0.5} ${
@@ -304,7 +304,7 @@ export default function PhotographyGraphic({
             {convertUnits(nearFocalPointInInches, 0)}
           </text>
           <text
-            fontSize={3}
+            fontSize={4}
             textAnchor="start"
             fill="#212E40"
             transform={`translate(${farFocalPointInInches + 0.5} 1) rotate(90)`}
@@ -315,8 +315,8 @@ export default function PhotographyGraphic({
       )}
       <text
         x={distanceToSubjectInInches}
-        y={height + 3.5}
-        fontSize={3}
+        y={height + 5}
+        fontSize={4}
         textAnchor="middle"
         fill="#212E40"
       >
