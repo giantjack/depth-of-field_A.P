@@ -221,6 +221,7 @@ function App() {
           verticalFieldOfView={verticalFieldOfView}
           onChangeDistance={(val) => setDistanceToSubjectInInches(val)}
           isDepthOfFieldInfinite={isDepthOfFieldInfinite}
+          isMobile={isMobile}
         />
       </Box>
 
