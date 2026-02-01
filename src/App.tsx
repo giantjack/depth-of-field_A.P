@@ -90,12 +90,13 @@ const COMMON_SETUPS: {
   },
 ];
 
-// Logarithmic scale for focal length
-const MIN_FOCAL = 3;
+// Logarithmic scale for focal length (starting at 14mm)
+const MIN_FOCAL = 14;
 const MAX_FOCAL = 800;
 
 function focalToSlider(focal: number): number {
-  return 100 * Math.log(focal / MIN_FOCAL) / Math.log(MAX_FOCAL / MIN_FOCAL);
+  const clamped = Math.max(focal, MIN_FOCAL);
+  return 100 * Math.log(clamped / MIN_FOCAL) / Math.log(MAX_FOCAL / MIN_FOCAL);
 }
 
 function sliderToFocal(sliderValue: number): number {
