@@ -90,6 +90,18 @@ const COMMON_SETUPS: {
   },
 ];
 
+// Logarithmic scale for focal length
+const MIN_FOCAL = 3;
+const MAX_FOCAL = 800;
+
+function focalToSlider(focal: number): number {
+  return 100 * Math.log(focal / MIN_FOCAL) / Math.log(MAX_FOCAL / MIN_FOCAL);
+}
+
+function sliderToFocal(sliderValue: number): number {
+  return Math.round(MIN_FOCAL * Math.pow(MAX_FOCAL / MIN_FOCAL, sliderValue / 100));
+}
+
 function clamp(value: number, min: number, max: number) {
   return Math.min(Math.max(value, min), max);
 }
@@ -158,6 +170,11 @@ function App() {
       }));
   }, [farDistanceInInches]);
 
+  const focalLengthMarks = [14, 24, 28, 35, 50, 85, 135, 200, 400, 800].map((focal) => ({
+    value: focalToSlider(focal),
+    label: `${focal}`,
+  }));
+
   return (
     <>
       <Box p={2} pt={6}>
@@ -175,7 +192,7 @@ function App() {
       </Box>
 
       <Box px={6}>
-        <Box pt={6}>
+        <Box pt={8}>
           <Flex gap={2}>
             <Box w="20%">
               <Text align="right">Distance au sujet (m)</Text>
@@ -203,7 +220,7 @@ function App() {
           </Flex>
         </Box>
 
-        <Box pt={6}>
+        <Box pt={10}>
           <Flex gap={2}>
             <Box w="20%">
               <Text align="right">Longueur focale (mm)</Text>
@@ -211,15 +228,15 @@ function App() {
             <Box flexGrow={1}>
               <Slider
                 aria-label="longueur focale"
-                value={focalLengthInMillimeters}
-                onChange={(val: number) => setFocalLengthInMillimeters(val)}
-                min={3}
-                max={800}
-                step={1}
+                value={focalToSlider(focalLengthInMillimeters)}
+                onChange={(val: number) => setFocalLengthInMillimeters(sliderToFocal(val))}
+                min={0}
+                max={100}
+                step={0.1}
               >
-                {[14, 35, 50, 85, 135, 200, 400, 600, 800].map((val) => (
-                  <SliderMark key={val} value={val} {...labelStyles}>
-                    {val}
+                {focalLengthMarks.map(({ value, label }) => (
+                  <SliderMark key={label} value={value} {...labelStyles}>
+                    {label}
                   </SliderMark>
                 ))}
                 <SliderTrack bg="#EFF7FB">
@@ -231,7 +248,7 @@ function App() {
           </Flex>
         </Box>
 
-        <Box pt={6}>
+        <Box pt={10}>
           <Flex gap={2}>
             <Box w="20%">
               <Text align="right">Ouverture</Text>
@@ -259,7 +276,7 @@ function App() {
           </Flex>
         </Box>
 
-        <Box pt={6}>
+        <Box pt={12}>
           <Flex gap={2}>
             <Flex gap={2} width="50%">
               <Box w="20%" mt={2}>
