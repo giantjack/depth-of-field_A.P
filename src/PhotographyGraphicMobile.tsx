@@ -75,11 +75,6 @@ const PhotographerSimple = () => (
   />
 );
 
-// Silhouette humaine simplifiée pour mobile
-const HumanSimple = () => (
-  <ellipse cx="0" cy="-18" rx="4" ry="4" fill="currentColor" />
-);
-
 export default function PhotographyGraphicMobile({
   distanceToSubjectInInches,
   nearFocalPointInInches,
