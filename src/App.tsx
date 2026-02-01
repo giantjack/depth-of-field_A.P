@@ -15,6 +15,7 @@ import {
 } from "@chakra-ui/react";
 
 import PhotographyGraphic, { SUBJECTS } from "./PhotographyGraphic";
+import PhotographyGraphicMobile from "./PhotographyGraphicMobile";
 
 const CIRCLES_OF_CONFUSION: Record<
   string,
@@ -205,24 +206,30 @@ function App() {
       : [1.4, 2, 2.8, 4, 5.6, 8, 11, 16, 22];
   }, [isMobile]);
 
+  // Props communes pour les deux composants graphiques
+  const graphicProps = {
+    distanceToSubjectInInches,
+    nearFocalPointInInches,
+    farFocalPointInInches,
+    farDistanceInInches,
+    hyperFocalDistanceInInches,
+    subject: subject as keyof typeof SUBJECTS,
+    focalLength: focalLengthInMillimeters,
+    aperture,
+    verticalFieldOfView,
+    onChangeDistance: (val: number) => setDistanceToSubjectInInches(val),
+    isDepthOfFieldInfinite,
+  };
+
   return (
     <Box>
       {/* Visualisation */}
       <Box p={2} pt={4}>
-        <PhotographyGraphic
-          distanceToSubjectInInches={distanceToSubjectInInches}
-          nearFocalPointInInches={nearFocalPointInInches}
-          farFocalPointInInches={farFocalPointInInches}
-          farDistanceInInches={farDistanceInInches}
-          hyperFocalDistanceInInches={hyperFocalDistanceInInches}
-          subject={subject as keyof typeof SUBJECTS}
-          focalLength={focalLengthInMillimeters}
-          aperture={aperture}
-          verticalFieldOfView={verticalFieldOfView}
-          onChangeDistance={(val) => setDistanceToSubjectInInches(val)}
-          isDepthOfFieldInfinite={isDepthOfFieldInfinite}
-          isMobile={isMobile}
-        />
+        {isMobile ? (
+          <PhotographyGraphicMobile {...graphicProps} />
+        ) : (
+          <PhotographyGraphic {...graphicProps} isMobile={false} />
+        )}
       </Box>
 
       {/* Contrôles */}
