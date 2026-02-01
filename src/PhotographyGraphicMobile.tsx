@@ -109,9 +109,21 @@ export default function PhotographyGraphicMobile({
   const svgRef = useRef<SVGSVGElement>(null);
   const mouseDownRef = useRef(false);
 
-  // Limiter le viewBox pour mobile - zoom sur une zone pertinente
-  // On prend max 4 mètres (160 inches) pour un schéma plus grand/zoomé
-  const maxViewDistance = Math.min(farDistanceInInches, 160);
+  const SubjectGraphic = SUBJECTS[subject].graphic;
+  const height = SUBJECTS[subject].height;
+
+  // Largeur de la fenêtre de visualisation (~3m = 120 inches)
+  const viewWidth = 120;
+  
+  // Centrer le viewBox sur le sujet, avec des limites
+  // On garde une marge à gauche pour que le sujet ne soit pas collé au bord
+  const viewStartX = Math.max(
+    -15, // Minimum : montrer l'appareil photo
+    Math.min(
+      distanceToSubjectInInches - viewWidth * 0.4, // Sujet à 40% depuis la gauche
+      farDistanceInInches - viewWidth // Maximum : ne pas dépasser la fin
+    )
+  );
   
   function onMouseDown() {
     mouseDownRef.current = true;
@@ -152,14 +164,12 @@ export default function PhotographyGraphicMobile({
     }
   }
 
-  const SubjectGraphic = SUBJECTS[subject].graphic;
-  const height = SUBJECTS[subject].height;
-
+  // Construire le path du champ de vision pour toute la distance
   const viewPath = buildViewPath(
     0,
     14.3,
     verticalFieldOfView,
-    maxViewDistance,
+    farDistanceInInches,
     height
   );
 
@@ -178,6 +188,9 @@ export default function PhotographyGraphicMobile({
   const nearLimitDisplay = convertUnits(nearFocalPointInInches, 2);
   const farLimitDisplay = isDepthOfFieldInfinite ? "∞" : convertUnits(farFocalPointInInches, 2);
 
+  // Est-ce que l'appareil photo est visible dans le viewBox actuel ?
+  const showCamera = viewStartX <= 0;
+
   return (
     <Box width="100%">
       {/* Infos en haut : réglages + hyperfocale */}
@@ -195,7 +208,7 @@ export default function PhotographyGraphicMobile({
         </Box>
       </Flex>
 
-      {/* SVG simplifié - juste le visuel */}
+      {/* SVG avec viewBox centré sur le sujet */}
       <svg
         ref={svgRef}
         onMouseDown={onMouseDown}
@@ -205,36 +218,35 @@ export default function PhotographyGraphicMobile({
         onTouchEnd={onTouchEnd}
         onTouchMove={onTouchMove}
         xmlns="http://www.w3.org/2000/svg"
-        viewBox={`-15 0 ${maxViewDistance + 15} ${height}`}
+        viewBox={`${viewStartX} 0 ${viewWidth} ${height}`}
         style={{ width: "100%", height: "auto", touchAction: "none" }}
       >
         <defs>
           <clipPath id="fov-mobile">
             <path d={viewPath} />
           </clipPath>
-          <clipPath id="subject-mobile">
-            <rect x={0} y={0} width={500} height={height} />
-          </clipPath>
         </defs>
 
         {/* Champ de vision */}
         <path d={viewPath} fill="#EFF7FB" />
 
-        {/* Appareil photo */}
-        <CameraIcon y={14.3} />
+        {/* Appareil photo (si visible) */}
+        {showCamera && <CameraIcon y={14.3} />}
 
         {/* Zone de netteté */}
         <rect
           x={nearFocalPointInInches}
           y={0}
-          width={(isDepthOfFieldInfinite ? maxViewDistance : Math.min(farFocalPointInInches, maxViewDistance)) - nearFocalPointInInches}
+          width={(isDepthOfFieldInfinite ? farDistanceInInches : farFocalPointInInches) - nearFocalPointInInches}
           height={height}
           fill="#FB9936"
           fillOpacity={0.3}
         />
 
-        {/* Marqueur hyperfocale (si visible) */}
-        {hyperFocalDistanceInInches <= maxViewDistance && hyperFocalDistanceInInches > 0 && (
+        {/* Marqueur hyperfocale (si visible dans la fenêtre) */}
+        {hyperFocalDistanceInInches > viewStartX && 
+         hyperFocalDistanceInInches < viewStartX + viewWidth && 
+         hyperFocalDistanceInInches > 0 && (
           <line
             x1={hyperFocalDistanceInInches}
             y1={0}
