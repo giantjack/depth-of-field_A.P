@@ -157,43 +157,60 @@ function App() {
   const labelStyles = {
     mt: "2",
     ml: "-2.5",
-    fontSize: { base: "xs", md: "sm" },
+    fontSize: "xs",
   };
 
+  // Marques de distance : tous les 2m pour éviter l'encombrement
   const distanceMarks = useMemo(() => {
     const farDistanceInMeters = farDistanceInInches * 0.0254;
     function convertMetersToInches(meters: number) {
       return meters * 39.3701;
     }
-    return new Array(Math.floor(farDistanceInMeters) + 1)
-      .fill(0)
-      .map((_val, val) => ({
-        value: convertMetersToInches(val + 1),
-        label: `${val + 1}m`,
-      }));
+    const marks = [];
+    for (let m = 2; m <= Math.floor(farDistanceInMeters); m += 2) {
+      marks.push({
+        value: convertMetersToInches(m),
+        label: `${m}m`,
+      });
+    }
+    return marks;
   }, [farDistanceInInches]);
 
-  const focalLengthMarks = [8, 14, 24, 28, 35, 50, 85, 135, 200, 400, 800].map((focal) => ({
+  // Marques de focale simplifiées
+  const focalLengthMarks = [8, 24, 50, 135, 400].map((focal) => ({
     value: focalToSlider(focal),
     label: `${focal}`,
   }));
 
+  // Marques d'ouverture simplifiées
+  const apertureMarks = [1.4, 2.8, 5.6, 11, 22];
+
   return (
     <Box>
-      {/* Visualisation */}
-      <Box p={2} pt={6}>
-        <PhotographyGraphic
-          distanceToSubjectInInches={distanceToSubjectInInches}
-          nearFocalPointInInches={nearFocalPointInInches}
-          farFocalPointInInches={farFocalPointInInches}
-          farDistanceInInches={farDistanceInInches}
-          hyperFocalDistanceInInches={hyperFocalDistanceInInches}
-          subject={subject as keyof typeof SUBJECTS}
-          focalLength={focalLengthInMillimeters}
-          aperture={aperture}
-          verticalFieldOfView={verticalFieldOfView}
-          onChangeDistance={(val) => setDistanceToSubjectInInches(val)}
-        />
+      {/* Visualisation - plus grande sur mobile */}
+      <Box 
+        p={2} 
+        pt={4}
+        minH={{ base: "200px", md: "auto" }}
+      >
+        <Box
+          transform={{ base: "scale(1.1)", md: "scale(1)" }}
+          transformOrigin="top left"
+          width={{ base: "91%", md: "100%" }}
+        >
+          <PhotographyGraphic
+            distanceToSubjectInInches={distanceToSubjectInInches}
+            nearFocalPointInInches={nearFocalPointInInches}
+            farFocalPointInInches={farFocalPointInInches}
+            farDistanceInInches={farDistanceInInches}
+            hyperFocalDistanceInInches={hyperFocalDistanceInInches}
+            subject={subject as keyof typeof SUBJECTS}
+            focalLength={focalLengthInMillimeters}
+            aperture={aperture}
+            verticalFieldOfView={verticalFieldOfView}
+            onChangeDistance={(val) => setDistanceToSubjectInInches(val)}
+          />
+        </Box>
       </Box>
 
       {/* Contrôles */}
@@ -268,7 +285,7 @@ function App() {
                 max={22}
                 step={0.1}
               >
-                {[0.8, 1.4, 1.8, 2.8, 4, 5.6, 8, 11, 16, 22].map((val) => (
+                {apertureMarks.map((val) => (
                   <SliderMark key={val} value={val} {...labelStyles}>
                     {val}
                   </SliderMark>
