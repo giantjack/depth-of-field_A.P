@@ -234,14 +234,14 @@ function App() {
 
       {/* Contrôles */}
       <Box px={{ base: 3, md: 6 }}>
-        <VStack spacing={{ base: 6, md: 8 }} align="stretch">
+        <VStack spacing={{ base: 3, md: 8 }} align="stretch">
           
           {/* Slider Distance */}
-          <Box pt={4}>
+          <Box pt={{ base: 2, md: 4 }}>
             <Text fontWeight="medium" fontSize="sm" mb={2}>
               Distance au sujet (m)
             </Text>
-            <Box px={2} pb={4}>
+            <Box px={2} pb={{ base: 3, md: 4 }}>
               <Slider
                 aria-label="distance au sujet"
                 value={distanceToSubjectInInches}
@@ -268,7 +268,7 @@ function App() {
             <Text fontWeight="medium" fontSize="sm" mb={2}>
               Longueur focale (mm)
             </Text>
-            <Box px={2} pb={4}>
+            <Box px={2} pb={{ base: 3, md: 4 }}>
               <Slider
                 aria-label="longueur focale"
                 value={focalToSlider(focalLengthInMillimeters)}
@@ -295,7 +295,7 @@ function App() {
             <Text fontWeight="medium" fontSize="sm" mb={2}>
               Ouverture
             </Text>
-            <Box px={2} pb={4}>
+            <Box px={2} pb={{ base: 3, md: 4 }}>
               <Slider
                 aria-label="ouverture"
                 value={aperture}
@@ -319,7 +319,7 @@ function App() {
 
           {/* Sélecteurs Capteur et Sujet */}
           <Flex 
-            gap={4} 
+            gap={{ base: 2, md: 4 }} 
             direction={{ base: "column", md: "row" }}
           >
             <Box flex="1">
