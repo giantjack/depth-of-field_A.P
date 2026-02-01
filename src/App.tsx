@@ -133,6 +133,7 @@ function App() {
       (distanceToSubjectInMM - focalLengthInMillimeters));
 
   const farDistanceInInches = 360;
+  const hyperFocalDistanceInInches = hyperFocalDistanceInMM / 25.4;
   const nearFocalPointInInches = clamp(
     depthOfFieldNearLimitInMM / 25.4,
     0,
@@ -184,6 +185,7 @@ function App() {
           nearFocalPointInInches={nearFocalPointInInches}
           farFocalPointInInches={farFocalPointInInches}
           farDistanceInInches={farDistanceInInches}
+          hyperFocalDistanceInInches={hyperFocalDistanceInInches}
           subject={subject as keyof typeof SUBJECTS}
           focalLength={focalLengthInMillimeters}
           aperture={aperture}
