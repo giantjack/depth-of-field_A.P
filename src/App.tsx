@@ -11,6 +11,7 @@ import {
   Select,
   Button,
   VStack,
+  useBreakpointValue,
 } from "@chakra-ui/react";
 
 import PhotographyGraphic, { SUBJECTS } from "./PhotographyGraphic";
@@ -116,6 +117,9 @@ function App() {
   const [subject, setSubject] = useState("Humain");
   const [sensor, setSensor] = useState("Plein format (35mm)");
 
+  // Responsive: moins de marks sur mobile
+  const isMobile = useBreakpointValue({ base: true, md: false });
+
   const distanceToSubjectInMM = distanceToSubjectInInches * 25.4;
 
   const circleOfConfusionInMillimeters = CIRCLES_OF_CONFUSION[sensor].coc;
@@ -145,6 +149,12 @@ function App() {
     0,
     farDistanceInInches
   );
+  
+  // Détecter si la profondeur de champ est infinie (mise au point >= hyperfocale)
+  const isDepthOfFieldInfinite = distanceToSubjectInInches >= hyperFocalDistanceInInches || 
+    farFocalPointInInches < nearFocalPointInInches ||
+    depthOfFieldFarLimitInMM < 0;
+  
   if (farFocalPointInInches < nearFocalPointInInches) {
     farFocalPointInInches = farDistanceInInches;
   }
@@ -160,57 +170,58 @@ function App() {
     fontSize: "xs",
   };
 
-  // Marques de distance : tous les 2m pour éviter l'encombrement
+  // Marques de distance : tous les 1m sur desktop, tous les 2m sur mobile
   const distanceMarks = useMemo(() => {
     const farDistanceInMeters = farDistanceInInches * 0.0254;
     function convertMetersToInches(meters: number) {
       return meters * 39.3701;
     }
     const marks = [];
-    for (let m = 2; m <= Math.floor(farDistanceInMeters); m += 2) {
+    const step = isMobile ? 2 : 1;
+    for (let m = step; m <= Math.floor(farDistanceInMeters); m += step) {
       marks.push({
         value: convertMetersToInches(m),
         label: `${m}m`,
       });
     }
     return marks;
-  }, [farDistanceInInches]);
+  }, [farDistanceInInches, isMobile]);
 
-  // Marques de focale simplifiées
-  const focalLengthMarks = [8, 24, 50, 135, 400].map((focal) => ({
-    value: focalToSlider(focal),
-    label: `${focal}`,
-  }));
+  // Marques de focale : complètes sur desktop, réduites sur mobile
+  const focalLengthMarks = useMemo(() => {
+    const focalValues = isMobile 
+      ? [8, 24, 50, 135, 400]
+      : [8, 14, 24, 35, 50, 85, 135, 200, 400, 800];
+    return focalValues.map((focal) => ({
+      value: focalToSlider(focal),
+      label: `${focal}`,
+    }));
+  }, [isMobile]);
 
-  // Marques d'ouverture simplifiées
-  const apertureMarks = [1.4, 2.8, 5.6, 11, 22];
+  // Marques d'ouverture : complètes sur desktop, réduites sur mobile
+  const apertureMarks = useMemo(() => {
+    return isMobile 
+      ? [1.4, 2.8, 5.6, 11, 22]
+      : [1.4, 2, 2.8, 4, 5.6, 8, 11, 16, 22];
+  }, [isMobile]);
 
   return (
     <Box>
-      {/* Visualisation - plus grande sur mobile */}
-      <Box 
-        p={2} 
-        pt={4}
-        minH={{ base: "200px", md: "auto" }}
-      >
-        <Box
-          transform={{ base: "scale(1.1)", md: "scale(1)" }}
-          transformOrigin="top left"
-          width={{ base: "91%", md: "100%" }}
-        >
-          <PhotographyGraphic
-            distanceToSubjectInInches={distanceToSubjectInInches}
-            nearFocalPointInInches={nearFocalPointInInches}
-            farFocalPointInInches={farFocalPointInInches}
-            farDistanceInInches={farDistanceInInches}
-            hyperFocalDistanceInInches={hyperFocalDistanceInInches}
-            subject={subject as keyof typeof SUBJECTS}
-            focalLength={focalLengthInMillimeters}
-            aperture={aperture}
-            verticalFieldOfView={verticalFieldOfView}
-            onChangeDistance={(val) => setDistanceToSubjectInInches(val)}
-          />
-        </Box>
+      {/* Visualisation */}
+      <Box p={2} pt={4}>
+        <PhotographyGraphic
+          distanceToSubjectInInches={distanceToSubjectInInches}
+          nearFocalPointInInches={nearFocalPointInInches}
+          farFocalPointInInches={farFocalPointInInches}
+          farDistanceInInches={farDistanceInInches}
+          hyperFocalDistanceInInches={hyperFocalDistanceInInches}
+          subject={subject as keyof typeof SUBJECTS}
+          focalLength={focalLengthInMillimeters}
+          aperture={aperture}
+          verticalFieldOfView={verticalFieldOfView}
+          onChangeDistance={(val) => setDistanceToSubjectInInches(val)}
+          isDepthOfFieldInfinite={isDepthOfFieldInfinite}
+        />
       </Box>
 
       {/* Contrôles */}
