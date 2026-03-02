@@ -12,10 +12,24 @@
     <script type="module" src="/src/main.tsx"></script>
     <script>
       (function(){
+        var allowed = ['https://apprendre-la-photo.fr','https://www.apprendre-la-photo.fr'];
+        if (window !== window.top) {
+          try {
+            var parentOrigin = document.referrer ? new URL(document.referrer).origin : '';
+            if (parentOrigin && allowed.indexOf(parentOrigin) === -1) {
+              document.getElementById('root').innerHTML =
+                '<div style="text-align:center;padding:40px;font-family:sans-serif;">' +
+                '<p>Cet outil est disponible sur <a href="https://apprendre-la-photo.fr">apprendre-la-photo.fr</a></p></div>';
+              return;
+            }
+          } catch(e) {}
+        }
         function sendHeight(){
           var root = document.getElementById('root');
           var h = root ? root.offsetHeight : document.documentElement.scrollHeight;
-          window.parent.postMessage({type:'resize-iframe',height:h},'*');
+          var target = allowed[0];
+          try { if (document.referrer) target = new URL(document.referrer).origin; } catch(e) {}
+          window.parent.postMessage({type:'resize-iframe',height:h}, target);
         }
         if(window.ResizeObserver){new ResizeObserver(sendHeight).observe(document.getElementById('root') || document.body);}
         window.addEventListener('load',sendHeight);
