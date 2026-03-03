@@ -335,9 +335,12 @@ function App() {
                   }
                   setSensor(evt?.target?.value);
                 }}
-                borderColor="#212E40"
+                bg="white"
+                borderColor="#CBD5E0"
+                borderRadius="lg"
                 _hover={{ borderColor: "#FB9936" }}
                 _focus={{ borderColor: "#FB9936", boxShadow: "0 0 0 1px #FB9936" }}
+                boxShadow="sm"
               >
                 {Object.entries(CIRCLES_OF_CONFUSION).map(([key]) => (
                   <option key={key} value={key}>
@@ -359,9 +362,12 @@ function App() {
                     setSubject(evt?.target?.value);
                   }
                 }}
-                borderColor="#212E40"
+                bg="white"
+                borderColor="#CBD5E0"
+                borderRadius="lg"
                 _hover={{ borderColor: "#FB9936" }}
                 _focus={{ borderColor: "#FB9936", boxShadow: "0 0 0 1px #FB9936" }}
+                boxShadow="sm"
               >
                 {Object.entries(SUBJECTS).map(([key]) => (
                   <option key={key} value={key}>
